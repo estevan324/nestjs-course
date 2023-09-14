@@ -2,50 +2,52 @@ import { Controller, Post, Body, Get, Param, Patch, Put, Delete, ParseIntPipe } 
 import { CreateUserDTO } from './dto/create-user.dto'
 import { UpdatePutUserDTO } from './dto/update-put-user.dto'
 import { UpdatePatchUserDTO } from './dto/update-patch-user.dto'
+import { UserService } from './user.service'
 
 @Controller("users")
 export class UserController {
+
+    constructor(private readonly userService: UserService) { }
+
     @Post()
-    async create(@Body() { name, email, password }: CreateUserDTO) {
-        return { name, email, password }
+    async create(@Body() data: CreateUserDTO) {
+
+        return this.userService.create(data)
     }
 
     @Get()
-    async list() {
-        return { users: [] }
+    async findAll() {
+
+        return this.userService.findAll()
     }
 
     @Get(':id')
-    async show(
-        @Param('id', ParseIntPipe) id: number
-    ) {
-        return { user: {}, id }
+    async findById(@Param('id', ParseIntPipe) id: number) {
+
+        return this.userService.findById(id)
     }
 
     @Put(':id')
     async update(
-        @Body() { name, email, password }: UpdatePutUserDTO,
-        @Param('id', ParseIntPipe) id: number) {
-        return {
-            method: "PUT",
-            name, email, password,
-            id
-        }
+        @Body() data: UpdatePutUserDTO,
+        @Param('id', ParseIntPipe) id: number
+    ) {
+
+        return this.userService.update(id, data)
     }
 
     @Patch(':id')
-    async updatePartial(@Body() { name }: UpdatePatchUserDTO, @Param('id', ParseIntPipe) id: number) {
-        return {
-            method: "PATCH",
-            name,
-            id
-        }
+    async updatePartial(
+        @Body() data: UpdatePatchUserDTO,
+        @Param('id', ParseIntPipe) id: number
+    ) {
+
+        return this.userService.updatePartial(id, data)
     }
 
     @Delete(':id')
     async delete(@Param('id', ParseIntPipe) id: number) {
-        return {
-            id
-        }
+
+        return this.userService.delete(id)
     }
 }
